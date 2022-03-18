@@ -17,6 +17,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import tool from '@/utils/tool';
+
 export default {
   data() {
     return {
@@ -110,10 +113,8 @@ export default {
       ],
     };
   },
-  mounted() {
-    window.ce = this.$refs.Onetab;
-  },
   methods: {
+    ...mapActions(['setBarList']),
     changeTou(e, i) {
       const { Onetab } = this.$refs;
       // 没有移动
@@ -127,27 +128,34 @@ export default {
         const parenWidth = this.$refs.Onetab.clientWidth;
         const changeDisX = itemLeft - parenWidth / 2 + itemWidth / 2;
 
-        this.moveTo(Onetab.scrollLeft, changeDisX);
+        // this.moveTo(Onetab.scrollLeft, changeDisX);
+        tool.scroll(Onetab.scrollLeft, changeDisX, Onetab, 'scrollLeft');
+
+        // 设置耳机导航栏
+        this.setBarList(this.list[i].title);
       }
     },
-    moveTo(start, end) {
-      let dis = 0;
-      // 加速度
-      let speed = 5;
-      if (end < 0) {
-        speed *= -1;
-      }
-      const t = setInterval(() => {
-        dis += speed;
-        // 每次起始位置加 5
-        this.$refs.Onetab.scrollLeft = start + dis;
-        // 当前位置大于 目标位置清除定时器
-        if (Math.abs(dis) >= Math.abs(end)) {
-          this.$refs.Onetab.scrollLeft = start + end;
-          clearInterval(t);
-        }
-      }, 2);
-    },
+    // moveTo(start, end) {
+    //   let dis = 0;
+    //   // 加速度
+    //   let speed = 5;
+    //   if (end < 0) {
+    //     speed *= -1;
+    //   }
+    //   const t = setInterval(() => {
+    //     dis += speed;
+    //     // 每次起始位置加 5
+    //     this.$refs.Onetab.scrollLeft = start + dis;
+    //     // 当前位置大于 目标位置清除定时器
+    //     if (Math.abs(dis) >= Math.abs(end)) {
+    //       this.$refs.Onetab.scrollLeft = start + end;
+    //       clearInterval(t);
+    //     }
+    //   }, 2);
+    // },
+  },
+  mounted() {
+    this.setBarList(this.list[this.activeNumber].title);
   },
 };
 </script>
@@ -197,7 +205,7 @@ export default {
         }
     }
     &::-webkit-scrollbar{
-        // display: none;
+        display: none;
     }
 }
 </style>

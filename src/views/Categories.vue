@@ -5,15 +5,18 @@
       <span>iphone13滞销</span>
     </div>
     <Onetab />
+    <Side />
   </div>
 </template>
 
 <script>
 import Onetab from '@/components/Onetab.vue';
+import Side from '@/components/Side.vue';
 
 export default {
   components: {
     Onetab,
+    Side,
   },
 };
 </script>
