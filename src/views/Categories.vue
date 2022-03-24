@@ -6,17 +6,29 @@
     </div>
     <Onetab />
     <Side />
+    <template v-if="isLoading">
+      <van-loading size="1.3rem" vertical/>
+    </template>
+    <template v-else>
+      <Productlist />
+    </template>
   </div>
 </template>
 
 <script>
 import Onetab from '@/components/Onetab.vue';
 import Side from '@/components/Side.vue';
+import Productlist from '@/components/Productlist.vue';
+import { mapState } from 'vuex';
 
 export default {
+  computed: {
+    ...mapState(['isLoading']),
+  },
   components: {
     Onetab,
     Side,
+    Productlist,
   },
 };
 </script>

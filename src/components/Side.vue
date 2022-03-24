@@ -13,23 +13,35 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import tool from '@/utils/tool';
 
 export default {
+  computed: {
+    ...mapState(['sideBarList', 'sppoList']),
+  },
   data() {
     return {
       move: false,
       index: 0,
     };
   },
-  computed: {
-    ...mapState(['sideBarList']),
-  },
   mounted() {
-    window.ce = this.$refs.Side;
+    this.getGoodsList();
   },
+  // watch: {
+  //   // 一级选项改变 选中全部
+  //   // sideBarList() {
+  //   //   this.index = 0;
+  //   //   // 改变商品类别的数据
+  //   //   // this.setListInfo(['type',this.sideBarList[this.index]]);
+  //   //   // 获取最新数据
+  //   //   this.getGoodsList();
+  //   // },
+  // },
   methods: {
+    ...mapMutations(['setListItem']),
+    ...mapActions(['getGoodsList']),
     changeTou(e, i) {
       if (!this.move) {
         this.index = i;
@@ -43,12 +55,16 @@ export default {
         const itemTop = e.target.offsetTop;
         // 子元素高度
         const itemHeight = e.target.offsetHeight;
-        console.log('=================');
-        console.log(itemTop - sideHeight / 2 + itemHeight / 2);
+
+        // console.log('=================');
+        // console.log(itemTop - sideHeight / 2 + itemHeight / 2);
         // console.log(itemTop + sideTop - sideHeight / 2 - itemHeight / 2);
-        console.log('start', Side.scrollTop);
+        // console.log('start', Side.scrollTop);
         tool.scroll(Side.scrollTop, itemTop - sideHeight / 2 + itemHeight / 2, Side, 'scrollTop');
-        console.log('结束', Side.scrollTop);
+        // console.log('结束', Side.scrollTop);
+        this.setListItem({ page: 1 });
+        this.setListItem({ type: this.sideBarList[this.index] });
+        this.getGoodsList();
       }
     },
   },

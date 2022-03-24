@@ -113,8 +113,12 @@ export default {
       ],
     };
   },
+  created() {
+    // 获取二级导航栏
+    this.getBarList(this.list[this.activeNumber].title);
+  },
   methods: {
-    ...mapActions(['setBarList']),
+    ...mapActions(['getBarList']),
     changeTou(e, i) {
       const { Onetab } = this.$refs;
       // 没有移动
@@ -131,8 +135,8 @@ export default {
         // this.moveTo(Onetab.scrollLeft, changeDisX);
         tool.scroll(Onetab.scrollLeft, changeDisX, Onetab, 'scrollLeft');
 
-        // 设置耳机导航栏
-        this.setBarList(this.list[i].title);
+        // 设置二级导航栏
+        this.getBarList(this.list[i].title);
       }
     },
     // moveTo(start, end) {
@@ -153,9 +157,6 @@ export default {
     //     }
     //   }, 2);
     // },
-  },
-  mounted() {
-    this.setBarList(this.list[this.activeNumber].title);
   },
 };
 </script>
@@ -189,6 +190,7 @@ export default {
             }
         }
         p{
+            font-size: 12px;
             border-radius: 30px;
             margin-top: 2.5px;
         }
@@ -198,7 +200,6 @@ export default {
             border-color: #d13193;
         }
         p{
-            font-size: 12px;
             color: #fff;
             font-weight: bold;
             background-color: #d13193;
