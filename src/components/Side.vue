@@ -18,7 +18,7 @@ import tool from '@/utils/tool';
 
 export default {
   computed: {
-    ...mapState(['sideBarList', 'sppoList']),
+    ...mapState(['sideBarList']),
   },
   data() {
     return {
@@ -26,21 +26,14 @@ export default {
       index: 0,
     };
   },
-  mounted() {
-    this.getGoodsList();
+  watch: {
+    // 二级导航栏数据变化选中第一个
+    sideBarList(){
+      this.index = 0;
+    }
   },
-  // watch: {
-  //   // 一级选项改变 选中全部
-  //   // sideBarList() {
-  //   //   this.index = 0;
-  //   //   // 改变商品类别的数据
-  //   //   // this.setListInfo(['type',this.sideBarList[this.index]]);
-  //   //   // 获取最新数据
-  //   //   this.getGoodsList();
-  //   // },
-  // },
   methods: {
-    ...mapMutations(['setListItem']),
+    ...mapMutations(['setListItem', 'setFinished', 'setGoodsList']),
     ...mapActions(['getGoodsList']),
     changeTou(e, i) {
       if (!this.move) {
@@ -62,9 +55,17 @@ export default {
         // console.log('start', Side.scrollTop);
         tool.scroll(Side.scrollTop, itemTop - sideHeight / 2 + itemHeight / 2, Side, 'scrollTop');
         // console.log('结束', Side.scrollTop);
+        // 清空商品列表
+        this.setGoodsList([]);
+        // 设置页码为1
         this.setListItem({ page: 1 });
+        // 设置当前点击的类型
         this.setListItem({ type: this.sideBarList[this.index] });
-        this.getGoodsList();
+        // 获取商品
+        this.getGoodsList().then(() => {
+          // 设置商品没有全部加载完
+          this.setFinished(false);
+        });
       }
     },
   },

@@ -19,7 +19,9 @@ export default new Vuex.Store({
       total: 0,
     },
     // 加载是否显示
-    isLoading: false,
+    isLoading: true,
+    // 商品数据是否全部加载完
+    finished: false,
   },
   mutations: {
     // 设置二级导航栏
@@ -37,6 +39,10 @@ export default new Vuex.Store({
     // 设置当前选中的某个属性的数据
     setListItem(state, payload) {
       state.listInfo = { ...state.listInfo, ...payload };
+    },
+    // 设置商品数据是否加载完毕
+    setFinished(state, payload) {
+      state.finished = payload;
     },
   },
   actions: {

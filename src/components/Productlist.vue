@@ -10,13 +10,13 @@
                 </li>
                 <li
                     :class="{ active: index === 1 }"
-                    @touchend="changeType('xiaoliang')"
+                    @touchend="changeType('sales')"
                 >
                     销量
                 </li>
                 <li
                     :class="[index === 2 ? 'active' : '', sort]"
-                    @touchend="changeType('jiang')"
+                    @touchend="changeType('sort')"
                 >
                     价格
                 </li>
@@ -32,6 +32,7 @@
                   v-model="loading"
                   :finished="finished"
                   finished-text="没有更多了"
+                  :immediate-check='false'
                   @load="onLoad">
                   <Productcard
                       v-for="n in sppoList"
@@ -57,10 +58,7 @@ export default {
     Productcard,
   },
   computed: {
-    ...mapState(['sppoList', 'listInfo']),
-  },
-  mounted() {
-    this.loading = false;
+    ...mapState(['sppoList', 'listInfo', 'finished']),
   },
   data() {
     return {
@@ -68,44 +66,58 @@ export default {
       sort: '',
       laside: true,
       isLoading: false,
-      loading: true,
+      loading: false,
       // 数据是否全部加载完
-      finished: false,
+      // finished: false,
       page: 1,
     };
   },
   methods: {
-    ...mapMutations(['setListItem']),
+    ...mapMutations(['setListItem', 'setFinished']),
     ...mapActions(['getGoodsList']),
+    // 刷新
     onRefresh() {
+      // this.page = 1;
+      // 设置当前页码为1
       this.setListItem({ page: 1 });
+      // 获取数据
       this.getGoodsList().then(() => {
+        // 刷新完成
         this.isLoading = false;
+        // 设置商品没有全部加载完
+        this.setFinished(false);
       });
     },
     onLoad() {
+      // 商品全部加载完成不执行后面的代码
       if (this.finished) {
         return;
       }
-      console.log('pro');
-      this.setListItem({ page: this.page + 1 });
+      // this.page = 1;
+      // 设置页码
+      this.setListItem({ page: this.listInfo.page += 1 });
+      // 获取下一页数据
       this.getGoodsList(true).then(() => {
         this.loading = false;
-        console.log(this.sppoList.length >= this.listInfo.total);
+        // 商品数量大于等于总数，设置商品全部加载完
         if (this.sppoList.length >= this.listInfo.total) {
-          console.log('leng');
-          this.finished = true;
+          // this.finished = true;
+          this.setFinished(true);
         }
       });
     },
     changeType(type) {
       this.sort = '';
+      // 综合
       if (type === 'all') {
         this.index = 0;
-      } else if (type === 'xiaoliang') {
+      // 销量
+      } else if (type === 'sales') {
         this.index = 1;
+      // 升序 / 降序
       } else {
         this.index = 2;
+        // sise升序 desc降序
         this.sort = this.laside ? 'rise' : 'desc';
         this.laside = !this.laside;
       }

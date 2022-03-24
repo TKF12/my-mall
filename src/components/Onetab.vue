@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import tool from '@/utils/tool';
 
 export default {
@@ -114,11 +114,17 @@ export default {
     };
   },
   created() {
+    this.setListItem({ page: 1 });
     // 获取二级导航栏
     this.getBarList(this.list[this.activeNumber].title);
+    this.getGoodsList();
+  },
+  computed: {
+    ...mapState(['listInfo']),
   },
   methods: {
-    ...mapActions(['getBarList']),
+    ...mapMutations(['setListItem', 'setGoodsList', 'setFinished']),
+    ...mapActions(['getBarList', 'getGoodsList']),
     changeTou(e, i) {
       const { Onetab } = this.$refs;
       // 没有移动
@@ -134,9 +140,17 @@ export default {
 
         // this.moveTo(Onetab.scrollLeft, changeDisX);
         tool.scroll(Onetab.scrollLeft, changeDisX, Onetab, 'scrollLeft');
-
+        // 设置当前页码为1
+        this.setListItem({ page: 1 });
+        // 清空商品列表
+        this.setGoodsList([]);
         // 设置二级导航栏
-        this.getBarList(this.list[i].title);
+        this.getBarList(this.list[i].title).then(() => {
+          // 获取商品
+          this.getGoodsList();
+          // 设置商品没有全部加载完
+          this.setFinished(false);
+        });
       }
     },
     // moveTo(start, end) {
