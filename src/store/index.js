@@ -12,7 +12,7 @@ export default new Vuex.Store({
     sppoList: [],
     // 当前选中的信息
     listInfo: {
-      type: 2,
+      type: 0,
       size: 10,
       sort: 'all',
     },

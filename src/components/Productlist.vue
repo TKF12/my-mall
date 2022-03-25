@@ -110,8 +110,6 @@ export default {
         return;
       }
       // this.page = 1;
-      // 设置页码
-      // this.setListItem({ page: this.page += 1 });
       // 获取下一页数据
       this.getGoodsList({ page: this.page += 1 }).then(() => {
         this.loading = false;
