@@ -13,15 +13,12 @@ export default new Vuex.Store({
     // 当前选中的信息
     listInfo: {
       type: 2,
-      page: 1,
       size: 10,
       sort: 'all',
-      total: 0,
     },
+    total: 0,
     // 加载是否显示
-    isLoading: true,
-    // 商品数据是否全部加载完
-    finished: false,
+    isLoading: false,
   },
   mutations: {
     // 设置二级导航栏
@@ -40,10 +37,6 @@ export default new Vuex.Store({
     setListItem(state, payload) {
       state.listInfo = { ...state.listInfo, ...payload };
     },
-    // 设置商品数据是否加载完毕
-    setFinished(state, payload) {
-      state.finished = payload;
-    },
   },
   actions: {
     // 获取二级导航栏
@@ -57,9 +50,9 @@ export default new Vuex.Store({
     },
     // 获取商品
     async getGoodsList(ctx, payload) {
-      await api.goodsList(ctx.state.listInfo).then((data) => {
+      await api.goodsList({ ...ctx.state.listInfo, ...payload }).then((data) => {
         ctx.commit('setListItem', { total: data.total });
-        ctx.commit('setGoodsList', payload ? [...ctx.state.sppoList, ...data.list] : data.list);
+        ctx.commit('setGoodsList', [...ctx.state.sppoList, ...data.list]);
       });
     },
   },

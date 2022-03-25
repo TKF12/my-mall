@@ -28,9 +28,9 @@ export default {
   },
   watch: {
     // 二级导航栏数据变化选中第一个
-    sideBarList(){
+    sideBarList() {
       this.index = 0;
-    }
+    },
   },
   methods: {
     ...mapMutations(['setListItem', 'setFinished', 'setGoodsList']),
@@ -57,15 +57,8 @@ export default {
         // console.log('结束', Side.scrollTop);
         // 清空商品列表
         this.setGoodsList([]);
-        // 设置页码为1
-        this.setListItem({ page: 1 });
-        // 设置当前点击的类型
+        // 设置当前点击的商品类型
         this.setListItem({ type: this.sideBarList[this.index] });
-        // 获取商品
-        this.getGoodsList().then(() => {
-          // 设置商品没有全部加载完
-          this.setFinished(false);
-        });
       }
     },
   },

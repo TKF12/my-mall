@@ -114,7 +114,6 @@ export default {
     };
   },
   created() {
-    this.setListItem({ page: 1 });
     // 获取二级导航栏
     this.getBarList(this.list[this.activeNumber].title);
     this.getGoodsList();
@@ -140,17 +139,12 @@ export default {
 
         // this.moveTo(Onetab.scrollLeft, changeDisX);
         tool.scroll(Onetab.scrollLeft, changeDisX, Onetab, 'scrollLeft');
-        // 设置当前页码为1
-        this.setListItem({ page: 1 });
+        // 设置排序方式
+        this.setListItem({ sort: 'all' });
         // 清空商品列表
         this.setGoodsList([]);
         // 设置二级导航栏
-        this.getBarList(this.list[i].title).then(() => {
-          // 获取商品
-          this.getGoodsList();
-          // 设置商品没有全部加载完
-          this.setFinished(false);
-        });
+        this.getBarList(this.list[i].title);
       }
     },
     // moveTo(start, end) {

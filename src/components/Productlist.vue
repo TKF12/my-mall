@@ -3,19 +3,19 @@
         <div class="head">
             <ul>
                 <li
-                    :class="{ active: index === 0 }"
+                    :class="{ active: type === 'all' }"
                     @touchend="changeType('all')"
                 >
                     综合
                 </li>
                 <li
-                    :class="{ active: index === 1 }"
-                    @touchend="changeType('sales')"
+                    :class="{ active: type === 'sale' }"
+                    @touchend="changeType('sale')"
                 >
                     销量
                 </li>
                 <li
-                    :class="[index === 2 ? 'active' : '', sort]"
+                    :class="{'price-up': type === 'price-up', 'price-down': type === 'price-down'}"
                     @touchend="changeType('sort')"
                 >
                     价格
@@ -32,7 +32,7 @@
                   v-model="loading"
                   :finished="finished"
                   finished-text="没有更多了"
-                  :immediate-check='false'
+                  :immediate-check='true'
                   @load="onLoad">
                   <Productcard
                       v-for="n in sppoList"
@@ -58,75 +58,95 @@ export default {
     Productcard,
   },
   computed: {
-    ...mapState(['sppoList', 'listInfo', 'finished']),
+    ...mapState(['sppoList', 'listInfo']),
   },
   data() {
     return {
-      index: 0,
+      // 显示类型
+      type: 'all',
+      // 升序 / 降序
       sort: '',
       laside: true,
       isLoading: false,
       loading: false,
       // 数据是否全部加载完
-      // finished: false,
-      page: 1,
+      finished: false,
+      page: 0,
     };
   },
+  watch: {
+    'listInfo.type': function () {
+      this.setGoodsList([]);
+      this.page = 1;
+      this.getGoodsList({ page: 1 }).then(() => {
+        this.finished = false;
+      });
+      // if (this.sppoList.length === 0 && this.listInfo.total === 0) {
+      //   this.finished = true;
+      // }
+      // this.loading = false;
+    },
+  },
   methods: {
-    ...mapMutations(['setListItem', 'setFinished']),
+    ...mapMutations(['setListItem', 'setGoodsList']),
     ...mapActions(['getGoodsList']),
     // 刷新
     onRefresh() {
-      // this.page = 1;
+      this.page = 1;
       // 设置当前页码为1
-      this.setListItem({ page: 1 });
+      this.setGoodsList([]);
       // 获取数据
-      this.getGoodsList().then(() => {
+      this.getGoodsList({ sort: this.type, page: 1 }).then(() => {
         // 刷新完成
         this.isLoading = false;
         // 设置商品没有全部加载完
-        this.setFinished(false);
+        this.finished = false;
       });
     },
     onLoad() {
+      console.log('onload');
       // 商品全部加载完成不执行后面的代码
       if (this.finished) {
         return;
       }
       // this.page = 1;
       // 设置页码
-      this.setListItem({ page: this.listInfo.page += 1 });
+      // this.setListItem({ page: this.page += 1 });
       // 获取下一页数据
-      this.getGoodsList(true).then(() => {
+      this.getGoodsList({ page: this.page += 1 }).then(() => {
         this.loading = false;
         // 商品数量大于等于总数，设置商品全部加载完
         if (this.sppoList.length >= this.listInfo.total) {
-          // this.finished = true;
-          this.setFinished(true);
+          this.finished = true;
+          // this.setFinished(true);
         }
       });
     },
-    changeType(type) {
-      this.sort = '';
-      // 综合
-      if (type === 'all') {
-        this.index = 0;
-      // 销量
-      } else if (type === 'sales') {
-        this.index = 1;
-      // 升序 / 降序
+    changeType(newtype) {
+      this.page = 1;
+      this.setGoodsList([]);
+      if (newtype === 'sort') {
+        if (this.type === 'price-up') {
+          this.type = 'price-down';
+        } else {
+          this.type = 'price-up';
+        }
       } else {
-        this.index = 2;
-        // sise升序 desc降序
-        this.sort = this.laside ? 'rise' : 'desc';
-        this.laside = !this.laside;
+        this.type = newtype;
       }
+      this.setListItem({ sort: this.type });
+      this.getGoodsList({ page: 1 });
+      this.finished = false;
     },
   },
 };
 </script>
 
 <style lang="less" scoped>
+.acColor{
+  color: #ff1a90;
+  font-weight: bold;
+}
 .Productlist {
     width: 296px;
     position: absolute;
@@ -166,15 +186,16 @@ export default {
                 }
             }
             .active {
-                color: #ff1a90;
-                font-weight: bold;
+              .acColor();
             }
-            .rise {
+            .price-up {
+                .acColor();
                 &:before {
                     border-bottom-color: #ff1a90 !important;
                 }
             }
-            .desc {
+            .price-down {
+                .acColor();
                 &::after {
                     border-top-color: #ff1a90 !important;
                 }
