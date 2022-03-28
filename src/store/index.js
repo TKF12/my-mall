@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api from '@/api/goods';
+import tool from '@/utils/tool';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     total: 0,
     // 加载是否显示
     isLoading: false,
+    sppoListStorage: {},
   },
   mutations: {
     // 设置二级导航栏
@@ -33,9 +35,29 @@ export default new Vuex.Store({
     setLoading(state, payload) {
       state.isLoading = payload;
     },
-    // 设置当前选中的某个属性的数据
+    // 设置请求参数
     setListItem(state, payload) {
       state.listInfo = { ...state.listInfo, ...payload };
+    },
+    setSppoListStorage(state, { id, num }) {
+      // 有这个数据
+      if (state.sppoListStorage[id]) {
+        // 当前数据等于1 并且 是减-1 则删除这个数据
+        if (state.sppoListStorage[id] === 1 && num === -1) {
+          Vue.delete(state.sppoListStorage, id);
+        } else {
+          // 当前数据加1
+          Vue.set(state.sppoListStorage, id, state.sppoListStorage[id] += num);
+        }
+      } else {
+        // 设置数据
+        Vue.set(state.sppoListStorage, id, num);
+      }
+      // 数据存储到本地
+      tool.addStorage(state.sppoListStorage);
+    },
+    setListStorage(state, payload) {
+      state.sppoListStorage = payload;
     },
   },
   actions: {

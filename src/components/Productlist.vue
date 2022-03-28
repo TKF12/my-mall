@@ -42,6 +42,8 @@
                       :describe="n.desc"
                       :label="n.tags"
                       :price="n.price"
+                      :id="n.id"
+                      :num="sppoListStorage[n.id]"
                   />
                 </van-list>
             </van-pull-refresh>
@@ -58,7 +60,7 @@ export default {
     Productcard,
   },
   computed: {
-    ...mapState(['sppoList', 'listInfo']),
+    ...mapState(['sppoList', 'listInfo', 'sppoListStorage']),
   },
   data() {
     return {

@@ -19,6 +19,17 @@ function scroll(start, end, dom, map) {
   }, 2);
 }
 
+// 存储商品添加的数据
+function addStorage(obj) {
+  localStorage.setItem('sppoListStorage', JSON.stringify(obj));
+}
+
+function quireStorage() {
+  return JSON.parse(localStorage.getItem('sppoListStorage')) || {};
+}
+
 export default {
   scroll,
+  addStorage,
+  quireStorage,
 };

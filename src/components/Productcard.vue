@@ -12,9 +12,17 @@
                 <div class="label">
                     <div v-for="n in label" :key="n">{{n}}</div>
                 </div>
-                <div class="operate">
+                <div class="sub">
                     <span class="price">{{price}}</span>
-                    <button class="add">+</button>
+                    <div class="operate">
+                        <div class="rec" v-if="num" @touchend="changeNum(id, -1)">
+                            <img src="https://duyi-bucket.oss-cn-beijing.aliyuncs.com/img/rec.png">
+                        </div>
+                        <div class="num" v-if="num">{{num}}</div>
+                        <div class="add" @touchend="changeNum(id, 1)">
+                            <img src="https://duyi-bucket.oss-cn-beijing.aliyuncs.com/img/add.png">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -22,8 +30,16 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
-  props: ['url', 'title', 'describe', 'label', 'price'],
+  props: ['url', 'title', 'describe', 'label', 'price', 'id', 'num'],
+  methods: {
+    ...mapMutations(['setSppoListStorage']),
+    changeNum(id, num) {
+      this.setSppoListStorage({ id, num });
+    },
+  },
 };
 </script>
 
@@ -77,7 +93,7 @@ export default {
                     margin-right: 5px;
                 }
             }
-            .operate {
+            .sub {
                 .overflow-hide();
                 margin-top: 4px;
                 display: flex;
@@ -86,6 +102,21 @@ export default {
                     color: #ff1a90;
                     font-size: 14px;
                     font-weight: 600;
+                }
+            }
+            .operate{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                div:not(class='num') {
+                    width: 16px;
+                    height: 16px;
+                    img{
+                        width: 100%;
+                    }
+                }
+                .num{
+                    padding: 0 5px;
                 }
             }
         }
