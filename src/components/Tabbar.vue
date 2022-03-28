@@ -3,6 +3,7 @@
     <van-tabbar-item icon="home-o">首页</van-tabbar-item>
     <van-tabbar-item :to="{name: 'Categories'}" icon="apps-o">分类</van-tabbar-item>
     <van-tabbar-item
+      id="shopping-cart"
       :to="{name: 'Commoditycart'}"
       icon="shopping-cart-o"
       :badge="badge">

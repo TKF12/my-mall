@@ -3,6 +3,7 @@
         <div class="list van-hairline--bottom">
             <div class="list-image">
                 <img
+                    ref="img"
                     :src="url[0]"
                 />
             </div>
@@ -31,6 +32,7 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import animat from '@/tool/animat';
 
 export default {
   props: ['url', 'title', 'describe', 'label', 'price', 'id', 'num'],
@@ -38,6 +40,29 @@ export default {
     ...mapMutations(['setSppoListStorage']),
     changeNum(id, num) {
       this.setSppoListStorage({ id, num });
+      // 当前是减1 不结束函数执行
+      if (num === -1) {
+        return;
+      }
+      const { img } = this.$refs;
+      // 图片位置，宽高
+      const {
+        top: imgTop, left: imgLeft, width: imgWidth, height: imgHeight,
+      } = img.getBoundingClientRect();
+      const shoppingCart = document.querySelector('#shopping-cart .van-tabbar-item__icon');
+      // 购物车位置
+      const {
+        top: endTop, left: endLeft,
+      } = shoppingCart.getBoundingClientRect();
+      animat({
+        imgTop,
+        imgLeft,
+        imgWidth,
+        imgHeight,
+        endTop,
+        endLeft,
+        src: img.src,
+      });
     },
   },
 };

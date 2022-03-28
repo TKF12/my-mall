@@ -66,8 +66,6 @@ export default {
     return {
       // 显示类型
       type: 'all',
-      // 升序 / 降序
-      sort: '',
       laside: true,
       isLoading: false,
       loading: false,
@@ -79,7 +77,7 @@ export default {
   watch: {
     'listInfo.type': function () {
       this.setGoodsList([]);
-      this.page = 1;
+      this.page = 0;
       this.getGoodsList({ page: 1 }).then(() => {
         this.finished = false;
       });
@@ -94,7 +92,7 @@ export default {
     ...mapActions(['getGoodsList']),
     // 刷新
     onRefresh() {
-      this.page = 1;
+      this.page = 0;
       // 设置当前页码为1
       this.setGoodsList([]);
       // 获取数据
@@ -123,7 +121,7 @@ export default {
       });
     },
     changeType(newtype) {
-      this.page = 1;
+      this.page = 0;
       this.setGoodsList([]);
       if (newtype === 'sort') {
         if (this.type === 'price-up') {
@@ -151,6 +149,8 @@ export default {
     width: 296px;
     position: absolute;
     right: 0;
+    bottom: 50px;
+    top: 138px;
     .head {
         width: 296px;
         height: 25px;
