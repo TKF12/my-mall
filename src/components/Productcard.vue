@@ -133,7 +133,7 @@ export default {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                div:not(class='num') {
+                div:not([class='num']) {
                     width: 16px;
                     height: 16px;
                     img{
