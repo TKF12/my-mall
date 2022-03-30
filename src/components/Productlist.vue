@@ -93,7 +93,7 @@ export default {
     // 刷新
     onRefresh() {
       this.page = 0;
-      // 设置当前页码为1
+      // 清空商品列表
       this.setGoodsList([]);
       // 获取数据
       this.getGoodsList({ sort: this.type, page: 1 }).then(() => {
@@ -116,7 +116,6 @@ export default {
         // 商品数量大于等于总数，设置商品全部加载完
         if (this.sppoList.length >= this.listInfo.total) {
           this.finished = true;
-          // this.setFinished(true);
         }
       });
     },

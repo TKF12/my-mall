@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
 import Categories from '@/views/Categories.vue';
 import Commoditycart from '@/views/Commoditycart.vue';
+import Search from '@/views/Search.vue';
 
 Vue.use(VueRouter);
 
@@ -24,6 +25,11 @@ const routes = [
         component: Commoditycart,
       },
     ],
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: Search,
   },
   {
     path: '*',

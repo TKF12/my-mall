@@ -9,4 +9,12 @@ export default {
   goodsList(params) {
     return requset.get('/getGoodsList', { params });
   },
+  // 模糊搜索
+  likeSearch(params) {
+    return requset.get('/likeSearch', { params });
+  },
+  // 搜索内容
+  search(params) {
+    return requset.get('/search', { params });
+  },
 };

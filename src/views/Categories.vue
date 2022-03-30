@@ -1,9 +1,9 @@
 <template>
   <div class="Categories">
-    <div class="search-btn">
+    <router-link class="search-btn" tag="div" :to="{name: 'Search'}">
       <van-icon name="search" />
       <span>iphone13滞销</span>
-    </div>
+    </router-link>
     <Onetab />
     <Side />
     <template v-if="isLoading">

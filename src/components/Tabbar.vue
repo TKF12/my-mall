@@ -25,7 +25,7 @@ export default {
   computed: {
     ...mapState(['sppoListStorage']),
     badge() {
-      const num = Object.values(this.sppoListStorage).reduce((item, newitem) => item + newitem, 0);
+      const num = Object.values(this.sppoListStorage).reduce((newitem, item) => newitem + item, 0);
       return num > 99 ? '99+' : num;
     },
   },

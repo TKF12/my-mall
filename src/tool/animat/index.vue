@@ -11,9 +11,6 @@
 
 <script>
 export default {
-  created() {
-    console.log(this.endLeft, this.endTop);
-  },
 };
 </script>
 
