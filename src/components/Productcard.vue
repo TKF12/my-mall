@@ -1,7 +1,7 @@
 <template>
     <div class="Productcard van-hairline--bottom">
             <div class="list-image">
-                <img ref="img" :src="url[0]" />
+                <img ref="img" :src="url[0] || noImage"/>
             </div>
             <div class="content">
                 <p class="title">{{ title }}</p>
@@ -35,9 +35,15 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import noImage from '@/assets/noImage.png';
 import animat from '@/tool/animat';
 
 export default {
+  data() {
+    return {
+      noImage,
+    };
+  },
   props: ['url', 'title', 'describe', 'label', 'price', 'id', 'num'],
   methods: {
     ...mapMutations(['setSppoListStorage']),

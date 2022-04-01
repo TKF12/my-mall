@@ -1,8 +1,12 @@
 <template>
     <div class="Search">
         <div class="search-header">
-            <router-link :to="{ name: 'Categories' }" tag="div" class="search-left">
-                <van-icon name="arrow-left" />
+            <router-link
+                :to="{ name: 'Categories' }"
+                tag="div"
+                class="search-left"
+            >
+                <van-icon name="arrow-left"/>
             </router-link>
             <div class="search-content">
                 <van-search
@@ -16,7 +20,7 @@
                     <template #action>
                         <div @touchend="onSearch" v-if="showText">搜索</div>
                         <div v-else id="shopping-cart">
-                          <van-icon name="shopping-cart-o" :badge="badge"/>
+                            <van-icon name="shopping-cart-o" :badge="badge" />
                         </div>
                     </template>
                 </van-search>
@@ -25,29 +29,38 @@
         <van-list class="search-list" v-if="show">
             <van-cell v-for="(item, i) in likeList" :key="i">
                 <template>
-                    <div v-html="formatHTML(item)" @touchend="onSearch(item)"></div>
+                    <div
+                        v-html="formatHTML(item)"
+                        @touchend="onSearch(item)"
+                    ></div>
                 </template>
             </van-cell>
         </van-list>
-        <div class="shoppList" v-if="shoppList.length || !show">
-                <van-list
-                  v-model="loading"
-                  :finished="finished"
-                  finished-text="没有更多了"
-                  :immediate-check='false'
-                  @load="onLoad">
-                  <Productcard
-                      v-for="n in shoppList"
-                      :url="n.images"
-                      :key="n.id"
-                      :title="n.title"
-                      :describe="n.desc"
-                      :label="n.tags"
-                      :price="n.price"
-                      :id="n.id"
-                      :num="sppoListStorage[n.id]"
-                  />
-                </van-list>
+        <Searchhistory
+          v-if="!shoppList.length && form.type === ''"
+          :historyList="historyList"
+          @toucheItem="onSearch"
+        />
+        <div class="shoppList" v-if="shoppList.length">
+            <van-list
+                v-model="loading"
+                :finished="finished"
+                finished-text="没有更多了"
+                :immediate-check="false"
+                @load="onLoad"
+            >
+                <Productcard
+                    v-for="n in shoppList"
+                    :url="n.images"
+                    :key="n.id"
+                    :title="n.title"
+                    :describe="n.desc"
+                    :label="n.tags"
+                    :price="n.price"
+                    :id="n.id"
+                    :num="sppoListStorage[n.id]"
+                />
+            </van-list>
         </div>
     </div>
 </template>
@@ -56,6 +69,7 @@
 import Productcard from '@/components/Productcard.vue';
 import api from '@/api/goods';
 import { mapState } from 'vuex';
+import Searchhistory from '@/components/Searchhistory.vue';
 
 export default {
   data() {
@@ -64,6 +78,7 @@ export default {
       showText: true,
       shoppList: [],
       likeList: [],
+      historyList: [],
       placeSearch: '苹果',
       form: {
         type: '',
@@ -79,27 +94,50 @@ export default {
   },
   components: {
     Productcard,
+    Searchhistory,
+  },
+  created() {
+    // 获取搜索历史记录
+    this.historyList = JSON.parse(localStorage.getItem('historyList')) || [];
   },
   computed: {
     ...mapState(['sppoListStorage']),
     badge() {
-      const num = Object.values(this.sppoListStorage).reduce((newitem, item) => newitem + item, 0);
+      const num = Object.values(this.sppoListStorage).reduce(
+        (newitem, item) => newitem + item,
+        0,
+      );
       return num > 99 ? '99+' : num;
     },
   },
   methods: {
     async onSearch(val) {
+      if (val) {
+        this.form.type = val;
+      }
       // 没有输入数据 使用默认
       if (!this.form.type) {
         this.form.type = this.placeSearch;
-      } else {
-        this.form.type = val;
       }
       this.form.page = 1;
       // 搜索列表不显示
       this.show = false;
       // 搜索文字隐藏
       this.showText = false;
+      // 查看历史记录是否有重复
+      const rep = this.historyList.find((ele) => ele.value === this.form.type);
+      // 重复更新时间戳 并 排序
+      if (rep) {
+        rep.time = new Date().getTime();
+        this.historyList.sort((a, b) => b.time - a.time);
+      } else {
+        this.historyList.unshift({ value: this.form.type, time: new Date().getTime() });
+        if (this.historyList.length >= 11) {
+          this.historyList.pop();
+        }
+      }
+      // 存储到本地
+      localStorage.setItem('historyList', JSON.stringify(this.historyList));
       // 设置商品没有全部加载完成
       this.finished = false;
       // 获取商品数据
@@ -179,6 +217,11 @@ export default {
 <style lang="less" scoped>
 .Search {
     width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
     background-color: #fff;
     .search-header {
         width: 100vw;
@@ -195,21 +238,29 @@ export default {
         .search-content {
             flex: 1 auto;
         }
-        #shopping-cart{
-          margin: 0 5px;
-          font-size: 20px;
+        #shopping-cart {
+            margin: 0 5px;
+            font-size: 20px;
         }
     }
-    .search-list{
+    .search-list {
         position: relative;
-        top: 50px;
+        top: 53px;
         left: 0;
     }
-    .shoppList{
+    .shoppList {
+        position: absolute;
+        width: 345px;
+        margin: 0 auto;
+        top: 53px;
+        left: 0;
+        right: 0;
+    }
+    .Searchhistory{
       position: absolute;
+      top: 53px;
       width: 345px;
       margin: 0 auto;
-      top: 50px;
       left: 0;
       right: 0;
     }

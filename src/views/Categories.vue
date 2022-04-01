@@ -36,6 +36,7 @@ export default {
 <style lang="less" scoped>
 .Categories {
   width: 375px;
+  height: 100vh;
   .search-btn {
     width: 355px;
     height: 33px;

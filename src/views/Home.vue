@@ -16,6 +16,13 @@ export default {
 </script>
 
 <style>
+.Home{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  transition: all 1s linear;
+}
 p{
   margin: 0;
 }
