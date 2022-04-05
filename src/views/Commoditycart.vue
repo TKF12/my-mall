@@ -70,6 +70,7 @@ export default {
     },
     getPrice() {
       const filArr = this.list.filter((item) => this.result.includes(item.id));
+      // 商品总价
       const totalPrice = filArr.reduce((newVal, val) => {
         // 选中商品的数量
         const num = this.sppoListStorage[val.id] || 0;
@@ -128,6 +129,7 @@ export default {
     },
   },
   created() {
+    // 获取数据
     this.getByIds();
   },
 };
