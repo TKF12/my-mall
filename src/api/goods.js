@@ -17,4 +17,8 @@ export default {
   search(params) {
     return requset.get('/search', { params });
   },
+  // 通过id获取商品
+  getGoodsByIds(params) {
+    return requset.get('/getGoodsByIds', { params });
+  },
 };

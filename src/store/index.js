@@ -20,6 +20,7 @@ export default new Vuex.Store({
     total: 0,
     // 加载是否显示
     isLoading: false,
+    // 添加的商品
     sppoListStorage: {},
   },
   mutations: {
@@ -43,7 +44,7 @@ export default new Vuex.Store({
       // 有这个数据
       if (state.sppoListStorage[id]) {
         // 当前数据等于1 并且 是减-1 则删除这个数据
-        if (state.sppoListStorage[id] === 1 && num === -1) {
+        if ((state.sppoListStorage[id] === 1 && num === -1) || num === 'del') {
           Vue.delete(state.sppoListStorage, id);
         } else {
           // 当前数据加1

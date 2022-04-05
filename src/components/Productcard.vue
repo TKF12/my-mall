@@ -44,13 +44,13 @@ export default {
       noImage,
     };
   },
-  props: ['url', 'title', 'describe', 'label', 'price', 'id', 'num'],
+  props: ['url', 'title', 'describe', 'label', 'price', 'id', 'num', 'anim'],
   methods: {
     ...mapMutations(['setSppoListStorage']),
     changeNum(id, num) {
       this.setSppoListStorage({ id, num });
-      // 当前是减1 不结束函数执行
-      if (num === -1) {
+      // 当前是减1 结束函数执行  或  不执行动画效果
+      if (num === -1 || this.anim) {
         return;
       }
       const { img } = this.$refs;

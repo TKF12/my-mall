@@ -9,8 +9,6 @@ import 'vant/lib/index.css';
 
 Vue.use(Vant);
 
-Vue.prototype.$bus = new Vue({});
-
 Vue.config.productionTip = false;
 
 // 获取本地存储的数据
