@@ -37,6 +37,10 @@ export default {
     ...mapActions(['getGoodsList']),
     changeTou(e, i) {
       if (!this.move) {
+        // 再次点击当前选择不做任何处理
+        if (this.index === i) {
+          return;
+        }
         this.index = i;
         // 父元素
         const { Side } = this.$refs;

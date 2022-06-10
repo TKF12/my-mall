@@ -13,12 +13,12 @@
                     v-model="form.type"
                     show-action
                     :placeholder="placeSearch"
-                    @search="onSearch"
+                    @search="onSearch(form.type)"
                     @input="input"
                     @focus="onFocus"
                 >
                     <template #action>
-                        <div @touchend="onSearch" v-if="showText">搜索</div>
+                        <div @touchend="onSearch(form.type)" v-if="showText">搜索</div>
                         <div v-else id="shopping-cart">
                             <van-icon name="shopping-cart-o" :badge="badge" />
                         </div>
@@ -36,17 +36,23 @@
                 </template>
             </van-cell>
         </van-list>
+        <van-empty description="暂无商品" v-if="!show && !shoppList.length && form.type" />
         <Searchhistory
           v-if="!shoppList.length && form.type === ''"
           :historyList="historyList"
           @toucheItem="onSearch"
         />
         <div class="shoppList" v-if="shoppList.length">
+          <van-pull-refresh
+            success-text="刷新成功"
+            head-height="70"
+            v-model="isLoading"
+            @refresh="onRefresh">
             <van-list
                 v-model="loading"
                 :finished="finished"
                 finished-text="没有更多了"
-                :immediate-check="false"
+                :immediate-check="true"
                 @load="onLoad"
             >
                 <Productcard
@@ -59,8 +65,10 @@
                     :price="n.price"
                     :id="n.id"
                     :num="sppoListStorage[n.id]"
+                    @changeNum="dleLen"
                 />
             </van-list>
+          </van-pull-refresh>
         </div>
     </div>
 </template>
@@ -68,25 +76,34 @@
 <script>
 import Productcard from '@/components/Productcard.vue';
 import api from '@/api/goods';
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import Searchhistory from '@/components/Searchhistory.vue';
 
 export default {
   data() {
     return {
       timer: null,
+      // 搜索是否显示
       showText: true,
+      // 商品列表
       shoppList: [],
+      // 搜索字列表
       likeList: [],
+      // 搜索历史
       historyList: [],
+      // 默认搜索
       placeSearch: '苹果',
+      // 请求数量
       form: {
         type: '',
-        page: 1,
+        page: 0,
         size: 10,
       },
+      // 搜索字列表是否显示
       show: false,
+      // 刷新是否处于加载状态
       isLoading: false,
+      // 加载状态
       loading: false,
       // 数据是否全部加载完
       finished: false,
@@ -102,6 +119,7 @@ export default {
   },
   computed: {
     ...mapState(['sppoListStorage']),
+    // 购物车数量
     badge() {
       const num = Object.values(this.sppoListStorage).reduce(
         (newitem, item) => newitem + item,
@@ -111,6 +129,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['setSppoListStorage']),
     async onSearch(val) {
       if (val) {
         this.form.type = val;
@@ -144,7 +163,7 @@ export default {
       const list = await api.search(this.form);
       // 更新商品数据
       this.shoppList = list.list;
-      // 当前商品数 大于等于 请求的总数 则加载完成
+      // 当前商品数 大于等于 商品的总数 则加载完成
       if (this.shoppList.length >= list.total) {
         this.loading = false;
         this.finished = true;
@@ -172,18 +191,32 @@ export default {
       this.show = true;
       this.getLikeSearch();
     },
+    onRefresh() {
+      this.form.page = 0;
+      this.isLoading = false;
+      this.finished = false;
+      // 清空商品列表
+      this.shoppList = [];
+      this.onLoad();
+    },
+    dleLen(id, num) {
+      this.setSppoListStorage({ id, num });
+    },
     onLoad() {
       // 商品全部加载完成不执行后面的代码
       if (this.finished) {
         return;
       }
-      // 获取下一页数据
+      this.loading = true;
       this.form.page += 1;
+      // 获取下一页数据
       api.search(this.form).then((list) => {
         this.shoppList = [...this.shoppList, ...list.list];
+        // 加载状态关闭
+        this.loading = false;
         // 当前商品数 大于等于 请求的总数 则加载完成
         if (this.shoppList.length >= list.total) {
-          this.loading = false;
+          // 商品加载完成
           this.finished = true;
         }
       });
@@ -252,7 +285,7 @@ export default {
         position: absolute;
         width: 345px;
         margin: 0 auto;
-        top: 53px;
+        top: 55px;
         left: 0;
         right: 0;
     }

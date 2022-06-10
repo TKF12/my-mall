@@ -7,7 +7,7 @@
         @click-right="del"
       />
     </div>
-    <div class="card-group">
+    <div class="card-group" v-if="list.length">
       <van-checkbox-group
         class="card"
         ref="checkboxGroup"
@@ -23,10 +23,12 @@
                 :price="item.price"
                 :id="item.id"
                 :anim="true"
-                :num="sppoListStorage[item.id]" />
+                :num="sppoListStorage[item.id]"
+                @changeNum="dleLen" />
           </div>
       </van-checkbox-group>
     </div>
+    <van-empty description="商品为空" v-else/>
     <van-submit-bar
       class="settlement"
       :price="getPrice"
@@ -98,6 +100,14 @@ export default {
     ...mapMutations(['setSppoListStorage']),
     onSubmit() {
 
+    },
+    dleLen(id, num) {
+      const iid = this.sppoListStorage[id];
+      // 当前商品数是1 并且 要-1 则删除商品
+      if (iid === 1 && num === -1) {
+        this.list = this.list.filter((el) => el.id !== id);
+      }
+      this.setSppoListStorage({ id, num });
     },
     onCheck() {
       if (this.checked) {

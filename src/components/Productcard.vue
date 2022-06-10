@@ -15,7 +15,7 @@
                         <div
                             class="rec"
                             v-if="num"
-                            @touchend="changeNum(id, -1)"
+                            @touchend="$emit('changeNum', id, -1)"
                         >
                             <img
                                 src="https://duyi-bucket.oss-cn-beijing.aliyuncs.com/img/rec.png"
@@ -50,7 +50,7 @@ export default {
     changeNum(id, num) {
       this.setSppoListStorage({ id, num });
       // 当前是减1 结束函数执行  或  不执行动画效果
-      if (num === -1 || this.anim) {
+      if (this.anim) {
         return;
       }
       const { img } = this.$refs;

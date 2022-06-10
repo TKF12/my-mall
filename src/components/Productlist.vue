@@ -33,6 +33,7 @@
                   :finished="finished"
                   finished-text="没有更多了"
                   :immediate-check='true'
+                  offset="5"
                   @load="onLoad">
                   <Productcard
                       v-for="n in sppoList"
@@ -44,6 +45,7 @@
                       :price="n.price"
                       :id="n.id"
                       :num="sppoListStorage[n.id]"
+                      @changeNum="dleLen"
                   />
                 </van-list>
             </van-pull-refresh>
@@ -66,7 +68,6 @@ export default {
     return {
       // 显示类型
       type: 'all',
-      laside: true,
       isLoading: false,
       loading: false,
       // 数据是否全部加载完
@@ -74,53 +75,54 @@ export default {
       page: 0,
     };
   },
+  destroyed() {
+    // 组件销毁清空商品列表
+    this.setGoodsList([]);
+  },
   watch: {
     'listInfo.type': function () {
       this.setGoodsList([]);
+      this.finished = false;
       this.page = 0;
-      this.getGoodsList({ page: 1 }).then(() => {
-        this.finished = false;
-      });
-      // if (this.sppoList.length === 0 && this.listInfo.total === 0) {
-      //   this.finished = true;
-      // }
-      // this.loading = false;
+      this.onLoad();
     },
   },
   methods: {
-    ...mapMutations(['setListItem', 'setGoodsList']),
+    ...mapMutations(['setListItem', 'setGoodsList', 'setSppoListStorage']),
     ...mapActions(['getGoodsList']),
     // 刷新
     onRefresh() {
       this.page = 0;
       // 清空商品列表
       this.setGoodsList([]);
-      // 获取数据
-      this.getGoodsList({ sort: this.type, page: 1 }).then(() => {
-        // 刷新完成
-        this.isLoading = false;
-        // 设置商品没有全部加载完
-        this.finished = false;
-      });
+      // 设置加载状态完成
+      this.isLoading = false;
+      this.finished = false;
+      this.onLoad();
     },
-    onLoad() {
-      console.log('onload');
+    dleLen(id, num) {
+      this.setSppoListStorage({ id, num });
+    },
+    async onLoad() {
       // 商品全部加载完成不执行后面的代码
       if (this.finished) {
         return;
       }
-      // this.page = 1;
+      // 显示加载状态
+      this.loading = true;
+      this.page += 1;
       // 获取下一页数据
-      this.getGoodsList({ page: this.page += 1 }).then(() => {
-        this.loading = false;
-        // 商品数量大于等于总数，设置商品全部加载完
-        if (this.sppoList.length >= this.listInfo.total) {
-          this.finished = true;
-        }
-      });
+      await this.getGoodsList({ page: this.page });
+      // 取消加载状态
+      this.loading = false;
+      // 商品数量大于等于总数，设置商品全部加载完
+      if (this.sppoList.length >= this.listInfo.total) {
+        this.finished = true;
+      }
     },
     changeType(newtype) {
       this.page = 0;
+      // 清空商品列表
       this.setGoodsList([]);
       if (newtype === 'sort') {
         if (this.type === 'price-up') {
@@ -131,9 +133,10 @@ export default {
       } else {
         this.type = newtype;
       }
-      this.setListItem({ sort: this.type });
-      this.getGoodsList({ page: 1 });
       this.finished = false;
+      // 设置排序方式
+      this.setListItem({ sort: this.type });
+      this.onLoad();
     },
   },
 };
